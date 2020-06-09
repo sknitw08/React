@@ -3,6 +3,8 @@ import { Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbIte
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from "react-redux-form";
 
+import { Loading } from './LoadingComponent';
+
 const required = val => val && val.length;
 const maxLength = len => val => !val || val.length <= len;
 const minLength = len => val => val && val.length >= len;
@@ -23,8 +25,8 @@ const minLength = len => val => val && val.length >= len;
    }
 
    handleSubmit = (values) => {
-     this.toggleModal();
-      alert('Current state is: ' + JSON.stringify(values));
+      this.toggleModal();
+      this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
    }
 
    render() {
@@ -110,7 +112,7 @@ const minLength = len => val => val && val.length >= len;
  }
 }
 
-const RenderComments = ({comments}) => {
+const RenderComments = ({comments, addComment, dishId}) => {
   if (comments != null) {
     let options = { year: "numeric", month: "short", day: "numeric" };
     return (
@@ -125,7 +127,7 @@ const RenderComments = ({comments}) => {
             </li>
           </ul>
           ))}
-        <CommentForm />
+        <CommentForm dishId={dishId} addComment={addComment}/>
       </div>
       );
   } else return (<div></div>);
@@ -144,11 +146,27 @@ const RenderDish = ({dish}) => {
     </div>
   )
 }
-const DishdetailComponent = ({dish, comments}) => {
-
+const DishdetailComponent = ({dish, comments, addComment, isLoading, errMess}) => {
+      if (isLoading) {
+        return(
+          <div className="container">
+            <div className="row">
+              <Loading />
+            </div>
+          </div>
+        )
+      } else if (errMess) {
+        return(
+          <div className="container">
+            <div className="row">
+              <h4>{errMess}</h4>
+            </div>
+          </div>
+        )
+      }
       if (dish != null) {
         return (
-          <div class = "container">
+          <div className = "container">
             <div className="row">
               <Breadcrumb>
                 <BreadcrumbItem><Link to="/menu">Menu</Link></BreadcrumbItem>
@@ -161,7 +179,9 @@ const DishdetailComponent = ({dish, comments}) => {
             </div>
             <div className="row">
               <RenderDish dish={dish}/>
-              <RenderComments comments = {comments} />
+              <RenderComments comments = {comments} 
+                addComment={addComment}
+                dishId={dish.id}/>
             </div>
           </div>
         );
