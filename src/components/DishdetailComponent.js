@@ -3,6 +3,8 @@ import { Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbIte
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from "react-redux-form";
 
+import { FadeTransform, Fade, Stagger } from 'react-animation-components';
+
 import { Loading } from './LoadingComponent';
 import { baseUrl } from '../shared/baseUrl';
 
@@ -119,15 +121,19 @@ const RenderComments = ({comments, postComment, dishId}) => {
     return (
       <div className="col-12 col-md-5 m-1">
         <h4>Comments</h4>
-        {comments.map(comment => (
-          <ul key={comment.id} className="list-unstyled">
-            <li className="mb-2">{comment.comment}</li>
-            <li>
-              -- {comment.author} ,{" "}
-            {new Date(comment.date).toLocaleDateString("en-US", options)}
-            </li>
-          </ul>
+        <Stagger in>
+          {comments.map(comment => (
+            <Fade>
+              <ul key={comment.id} className="list-unstyled">
+                <li className="mb-2">{comment.comment}</li>
+                <li>
+                  -- {comment.author} ,{" "}
+                  {new Date(comment.date).toLocaleDateString("en-US", options)}
+                </li>
+              </ul>
+            </Fade>
           ))}
+        </Stagger>
         <CommentForm dishId={dishId} postComment={postComment}/>
       </div>
       );
@@ -137,13 +143,17 @@ const RenderComments = ({comments, postComment, dishId}) => {
 const RenderDish = ({dish}) => {
   return (
     <div className="col-12 col-md-5 m-1">
-      <Card>
-        <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name} />
-        <CardBody>
-          <CardTitle>{dish.name}</CardTitle>
-          <CardText>{dish.description}</CardText>
-        </CardBody>
-      </Card>
+      <FadeTransform in transformProps={{
+                    exitTransform: 'scale(0.5) translateY(-50%)'
+                }}>
+        <Card>
+          <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name} />
+          <CardBody>
+            <CardTitle>{dish.name}</CardTitle>
+            <CardText>{dish.description}</CardText>
+          </CardBody>
+        </Card>
+      </FadeTransform>
     </div>
   )
 }
