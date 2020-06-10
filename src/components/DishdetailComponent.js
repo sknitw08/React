@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from "react-redux-form";
 
 import { Loading } from './LoadingComponent';
+import { baseUrl } from '../shared/baseUrl';
 
 const required = val => val && val.length;
 const maxLength = len => val => !val || val.length <= len;
@@ -26,7 +27,7 @@ const minLength = len => val => val && val.length >= len;
 
    handleSubmit = (values) => {
       this.toggleModal();
-      this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
+      this.props.postComment(this.props.dishId, values.rating, values.author, values.comment);
    }
 
    render() {
@@ -112,7 +113,7 @@ const minLength = len => val => val && val.length >= len;
  }
 }
 
-const RenderComments = ({comments, addComment, dishId}) => {
+const RenderComments = ({comments, postComment, dishId}) => {
   if (comments != null) {
     let options = { year: "numeric", month: "short", day: "numeric" };
     return (
@@ -127,7 +128,7 @@ const RenderComments = ({comments, addComment, dishId}) => {
             </li>
           </ul>
           ))}
-        <CommentForm dishId={dishId} addComment={addComment}/>
+        <CommentForm dishId={dishId} postComment={postComment}/>
       </div>
       );
   } else return (<div></div>);
@@ -137,7 +138,7 @@ const RenderDish = ({dish}) => {
   return (
     <div className="col-12 col-md-5 m-1">
       <Card>
-        <CardImg width="100%" src={dish.image} alt={dish.name} />
+        <CardImg width="100%" src={baseUrl + dish.image} alt={dish.name} />
         <CardBody>
           <CardTitle>{dish.name}</CardTitle>
           <CardText>{dish.description}</CardText>
@@ -146,7 +147,7 @@ const RenderDish = ({dish}) => {
     </div>
   )
 }
-const DishdetailComponent = ({dish, comments, addComment, isLoading, errMess}) => {
+const DishdetailComponent = ({dish, comments, postComment, isLoading, errMess}) => {
       if (isLoading) {
         return(
           <div className="container">
@@ -180,7 +181,7 @@ const DishdetailComponent = ({dish, comments, addComment, isLoading, errMess}) =
             <div className="row">
               <RenderDish dish={dish}/>
               <RenderComments comments = {comments} 
-                addComment={addComment}
+                postComment={postComment}
                 dishId={dish.id}/>
             </div>
           </div>
